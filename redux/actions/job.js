@@ -4,10 +4,10 @@ import axios from 'axios';
 // 192.168.0.139
 const IP = 'http://localhost:2000/job';
 
-export const getJob = () => {
+export const getJob = page => {
   return {
     type: 'GET_JOB',
-    payload: axios.get(`${IP}`),
+    payload: axios.get(`${IP}?page=${page}`),
   };
 };
 
@@ -21,7 +21,7 @@ export const getJobId = id => {
 export const getJobSearch = (name, company) => {
   return {
     type: 'GET_JOB',
-    payload: axios.get(`${IP}?name=${name}``&company=${company}`),
+    payload: axios.get(`${IP}?name=${name}&company=${company}`),
   };
 };
 

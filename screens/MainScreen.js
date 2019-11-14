@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {
@@ -48,7 +49,9 @@ class MainScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      search: '',
+      mQuery: '',
+      queryName: '',
+      queryCompany: '',
     };
   }
 
@@ -62,7 +65,7 @@ class MainScreen extends Component {
 
   openDrawer = () => {
     this._drawer._root.open();
-  }
+  };
 
   goToDetail = id => {
     this.props.navigation.navigate('DetailScreen', {id});
@@ -112,8 +115,17 @@ class MainScreen extends Component {
     await this.props.dispatch(getCompany());
   };
 
-  updateSearch = search => {
-    this.setState({search});
+  queryNameChange = e => {
+    const queryName = e.target.value;;
+    this.setState({queryName});
+  };
+  queryCompanyChange = e => {
+    const queryCompany = e.target.value;;
+    this.setState({queryCompany});
+  };
+
+  doSearch = async (name, company) => {
+    await this.props.dispatch(getJobSearch(name, company));
   };
 
   render() {
@@ -160,7 +172,7 @@ class MainScreen extends Component {
                 </Right>
               </Header>
               <View style={{backgroundColor: '#00b894'}}>
-                <View style={style.searchSection}>
+                <View style={{marginLeft: 10, marginRight: 10, marginTop: 10}}>
                   <Text style={style.searchTitle}>Looking For Job :</Text>
                   <Input
                     placeholder="Search..."
@@ -170,7 +182,7 @@ class MainScreen extends Component {
                     iconSize={14}
                     iconColor="black"
                     style={{borderRadius: 30}}
-                    onPress={() => this.goToSearch()}
+                    onFocus={() => this.goToSearch()}
                   />
                 </View>
               </View>
@@ -180,11 +192,11 @@ class MainScreen extends Component {
                   <React.Fragment>
                     <View style={style.searchSection}>
                       <Text style={{fontWeight: '700', marginBottom: 10}}>
-                        Partner Company
+                        Hiring Partner
                       </Text>
                     </View>
                     <View>
-                      <SafeAreaView>
+                      <ScrollView showsHorizontalScrollIndicator={false}>
                         <List
                           horizontal={true}
                           dataArray={this.props.company.data}
@@ -206,7 +218,7 @@ class MainScreen extends Component {
                             </TouchableOpacity>
                           )}
                         />
-                      </SafeAreaView>
+                      </ScrollView>
                     </View>
                     <View>
                       <Text

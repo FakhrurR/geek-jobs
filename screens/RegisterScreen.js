@@ -1,13 +1,89 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ToastAndroid,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {Input, Button} from 'galio-framework';
+import {addUser} from '../redux/actions/user';
 
-export default class RegisterScreen extends Component {
+const Toast = props => {
+  if (props.visible) {
+    ToastAndroid.showWithGravityAndOffset(
+      props.message,
+      ToastAndroid.LONG,
+      ToastAndroid.BOTTOM,
+      25,
+      50,
+    );
+    return null;
+  }
+  return null;
+};
+
+class RegisterScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      username: '',
+      email: '',
+      password: '',
+      level: '',
+      isSubmit: false,
+    };
+  }
 
   goToLogin = () => {
     this.props.navigation.navigate('LoginScreen');
+  };
+
+  addRegister = async account => {
+    await this.props.dispatch(addUser(account));
+  };
+
+  handleUsernameChange = text => {
+    console.log('username :' + text);
+    this.setState({username: text});
+  };
+
+  handleEmailChange = text => {
+    console.log('Email :' + text);
+    this.setState({email: text});
+  };
+
+  handlePasswordChange = text => {
+    console.log('password :' + text);
+    this.setState({password: text});
+  };
+
+  handleSubmit = () => {
+    let account = {};
+    account.email = this.state.email;
+    account.username = this.state.username;
+    account.password = this.state.password;
+    
+    this.addRegister(account)
+      .then(res => {
+        this.setState({isSubmit: true}, () => {
+          this.hideToast();
+        });
+        console.log(res.data);
+      })
+      .catch(err => {
+        this.setState({isSubmit: false});
+        console.log(err);
+        return;
+      });
+  };
+
+  hideToast = () => {
+    this.setState({
+      isSubmit: false,
+    });
   };
 
   render() {
@@ -16,16 +92,32 @@ export default class RegisterScreen extends Component {
         <Text style={{fontWeight: '700', fontSize: 30, marginBottom: 30}}>
           SIGN UP
         </Text>
-        <Input placeholder="Email" style={{borderRadius: 30}} />
-        <Input placeholder="Username" style={{borderRadius: 30}} />
+        <Input
+          placeholder="Email"
+          style={{borderRadius: 30}}
+          onChangeText={this.handleEmailChange}
+          value={this.state.email}
+        />
+        <Input
+          placeholder="Username"
+          style={{borderRadius: 30}}
+          onChangeText={this.handleUsernameChange}
+          value={this.state.username}
+        />
         <Input
           placeholder="Password"
           password
           viewPass
           style={{borderRadius: 30, marginBottom: 10}}
+          onChangeText={this.handlePasswordChange}
+          value={this.state.password}
         />
         <View>
-          <Button style={styles.signupButton}>Sign Up</Button>
+          <Button
+            style={styles.signupButton}
+            onPress={() => this.handleSubmit()}>
+            Sign Up
+          </Button>
         </View>
         <View style={{flexDirection: 'row'}}>
           <Text>Already have an account?</Text>
@@ -78,3 +170,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
+
+const mapStateProps = state => ({
+  user: state.user,
+});
+
+export default connect(mapStateProps)(RegisterScreen);

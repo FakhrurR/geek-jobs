@@ -18,7 +18,11 @@ import SplashScreen from './screens/SplashScreen';
 import AddJob from './screens/Crud/jobs/AddJob';
 import AddCompany from './screens/Crud/companies/AddCompany';
 import AddCategory from './screens/Crud/categories/AddCategory';
+import ListCategory from './screens/Crud/categories/ListCategory';
+import ListCompany from './screens/Crud/companies/ListCompany';
+import ListJob from './screens/Crud/jobs/ListJob';
 import SearchScreen from './screens/SearchScreen';
+import MyDasboard from './screens/MyDasboard';
 
 export default class App extends Component {
   render() {
@@ -30,23 +34,12 @@ export default class App extends Component {
   }
 }
 const StackNavigation = createStackNavigator({
-  // SearchScreen,
-  // DetailCompany,
-  // SplashScreen,
-  // WelcomeScreen: {
-  //   screen: WelcomeScreen,
-  //   navigationOptions: {
-  //     header: null,
-  //   },
+  // ListJob,
+  // MyDasboard: {
+  //   screen: MyDasboard,
   // },
   LoginScreen: {
     screen: LoginScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  RegisterScreen: {
-    screen: RegisterScreen,
     navigationOptions: {
       header: null,
     },
@@ -56,6 +49,29 @@ const StackNavigation = createStackNavigator({
   ProfileScreen,
   DrawerNavigator: {
     screen: DrawerNavigator,
+  },
+  SearchScreen,
+  // DetailCompany,
+  // SplashScreen,
+  // WelcomeScreen: {
+  //   screen: WelcomeScreen,
+  //   navigationOptions: {
+  //     header: null,
+  //   },
+  // },
+  // ListCategory,
+  // ListCompany,
+  // LoginScreen: {
+  //   screen: LoginScreen,
+  //   navigationOptions: {
+  //     header: null,
+  //   },
+  // },
+  RegisterScreen: {
+    screen: RegisterScreen,
+    navigationOptions: {
+      header: null,
+    },
   },
   // AddJob: {
   //   screen: AddJob,

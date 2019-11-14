@@ -10,7 +10,6 @@ class LoginScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: {},
       isError: '',
       email: '',
       password: '',
@@ -30,27 +29,29 @@ class LoginScreen extends Component {
     await this.props.dispatch(getUser(account));
   };
 
-  handleEmailChange = event => {
-    this.setState({email: event.target.value});
+  handleEmailChange = text => {
+    console.log('email :' + text);
+    this.setState({email: text});
   };
 
-  handlePasswordChange = event => {
-    this.setState({password: event.target.value});
+  handlePasswordChange = text => {
+    console.log('password :' + text);
+    this.setState({password: text});
   };
 
-  handleSubmit = event => {
-    event.preventDefault();
-
-    const account = {
-      email: this.state.email,
-      password: this.state.password,
-    };
+  handleSubmit = () => {
+    let account = {};
+    account.email = this.state.email;
+    account.password = this.state.password;
 
     this.getLogin(account)
       .then(res => {
+        alert('Success to Login');
+        this.goToMain();
         console.log(res.data);
       })
       .catch(err => {
+        alert('Email or Password Wrong' + err);
         console.log(err);
       });
   };
@@ -60,15 +61,24 @@ class LoginScreen extends Component {
         <Text style={{fontWeight: '700', fontSize: 40, marginBottom: 30}}>
           GEEKJOBS
         </Text>
-        <Input placeholder="Username or Email" style={{borderRadius: 30}} />
+        <Input
+          placeholder="Email"
+          style={{borderRadius: 30}}
+          onChangeText={this.handleEmailChange}
+          value={this.state.email}
+        />
         <Input
           placeholder="Password"
           password
           viewPass
           style={{borderRadius: 30, marginBottom: 10}}
+          onChangeText={this.handlePasswordChange}
+          value={this.state.password}
         />
         <View>
-          <Button style={styles.LoginButton} onPress={() => this.goToMain()}>
+          <Button
+            style={styles.LoginButton}
+            onPress={() => this.handleSubmit()}>
             Log in
           </Button>
         </View>

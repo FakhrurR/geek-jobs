@@ -1,6 +1,8 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
-import {View, Text, Image, ScrollView} from 'react-native';
+import {View, Image, ScrollView, Text} from 'react-native';
+import { Divider } from 'react-native-elements';
+import {Button} from 'galio-framework';
 import {connect} from 'react-redux';
 
 import {getJobId} from '../redux/actions/job';
@@ -20,7 +22,8 @@ class DetailScreen extends Component {
       flex: 1,
       textAlign: 'left',
     },
-    title: 'Detail Job',
+    backgroundColor: '#00b894',
+    title: 'Job Details',
   };
 
   componentDidMount() {
@@ -35,54 +38,88 @@ class DetailScreen extends Component {
   render() {
     return (
       <View>
-        <ScrollView>
-          {this.props.job.isLoading && <Spinner />}
+        <View style={{position: 'relative'}}>
+          <ScrollView>
+            {this.props.job.isLoading && <Spinner />}
 
-          {!this.props.job.isLoading && (
-            <React.Fragment>
-              {this.props.job.data
-                .filter(data => data.id === this.state.id)
-                .map((v, i) => (
-                  <View key={i.toString()}>
-                    {/* topLayout */}
-                    <View>
-                      <View>
-                        <Image
-                          source={{uri: v.logo}}
+            {!this.props.job.isLoading && (
+              <React.Fragment>
+                {this.props.job.data
+                  .filter(data => data.id === this.state.id)
+                  .map((v, i) => (
+                    <View key={i.toString()}>
+                      {/* topLayout */}
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                        }}>
+                        <View>
+                          <Image
+                            source={{uri: v.logo}}
+                            style={{
+                              flex: 1,
+                              width: 120,
+                              height: 50,
+                              marginTop: 5,
+                              marginLeft: 20,
+                              resizeMode: 'contain',
+                              borderRadius: 30,
+                            }}
+                          />
+                        </View>
+                        <View
+                          style={{marginTop: 10, marginLeft: 10, width: 150}}>
+                          <Text
+                            style={{
+                              marginBottom: 10,
+                              fontWeight: '700',
+                              fontSize: 15,
+                            }}>
+                            {v.name}
+                          </Text>
+                          <Text style={{fontWeight: '700'}}>Company Name</Text>
+                          <Text>{v.company}</Text>
+                          <Text style={{fontWeight: '700'}}>Published</Text>
+                          <Text>{v.date_added}</Text>
+                        </View>
+                      </View>
+                      {/* bottomLayout */}
+                      <View
+                        style={{
+                          marginTop: 40,
+                          marginLeft: 10,
+                        }}>
+                        <Text
                           style={{
-                            flex: 1,
-                            width: 300,
-                            height: 200,
-                            marginTop: 20,
-                            marginLeft: 10,
-                            resizeMode: 'contain',
-                          }}
-                        />
+                            fontWeight: '700',
+                            marginTop: -30,
+                            fontSize: 15,
+                          }}>
+                          Location
+                        </Text>
+                        <Text style={{marginBottom: 10}}>{v.location}</Text>
+                        <Text style={{fontWeight: '700', fontSize: 15}}>
+                          Salary
+                        </Text>
+                        <Text style={{marginBottom: 10}}>Rp.{v.salary}</Text>
+                        <Text
+                          style={{
+                            fontWeight: '700',
+                            fontSize: 15,
+                          }}>
+                          Description
+                        </Text>
+                        <Text style={{marginBottom: 10}}>{v.description}</Text>
                       </View>
                     </View>
-                    {/* bottomLayout */}
-                    <View
-                      style={{
-                        marginTop: 40,
-                        marginLeft: 10,
-                        alignItems: 'center',
-                      }}>
-                      <Text style={{fontWeight: '700'}}>Job Name</Text>
-                      <Text style={{marginBottom: 10}}>{v.name}</Text>
-                      <Text style={{fontWeight: '700'}}>Company Name</Text>
-                      <Text style={{marginBottom: 10}}>{v.company}</Text>
-                      <Text style={{fontWeight: '700'}}>Salary</Text>
-                      <Text style={{marginBottom: 10}}>{v.salary}</Text>
-                      <Text style={{fontWeight: '700'}}>Location</Text>
-                      <Text style={{marginBottom: 10}}>{v.location}</Text>
-                      <Text style={{fontWeight: '700'}}>Description</Text>
-                      <Text style={{marginBottom: 10}}>{v.description}</Text>
-                    </View>
-                  </View>
-                ))}
-            </React.Fragment>
-          )}
-        </ScrollView>
+                  ))}
+              </React.Fragment>
+            )}
+          </ScrollView>
+        </View>
+        <View style={{position: 'absolute'}}>
+          <Button style={{width: 100}}>APPLY NOW</Button>
+        </View>
       </View>
     );
   }
