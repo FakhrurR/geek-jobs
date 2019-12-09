@@ -35,6 +35,7 @@ import {Avatar} from 'react-native-elements';
 import {Input, Block} from 'galio-framework';
 import {Icon} from 'react-native-elements';
 import IconBar from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-community/async-storage';
 import {connect} from 'react-redux';
 import {TouchableOpacity, FlatList} from 'react-native-gesture-handler';
 import {Drawer} from 'native-base';
@@ -75,16 +76,28 @@ class MainScreen extends Component {
     this.props.navigation.navigate('DetailCompany', {id});
   };
 
-  goToProfile = () => {
-    this.props.navigation.navigate('ProfileScreen');
-  };
-
   goToSearch = () => {
     this.props.navigation.navigate('SearchScreen');
   };
 
-  goToProfile = () => {
-    this.props.navigation.navigate('ProfileScreen');
+  goToProfile = async () => {
+    const value = await AsyncStorage.getItem('Authorization');;
+    if  (value === null) {
+      Alert.alert('Alert', 'You Must Login to Enter Profile', [
+        {
+          text: 'Cancel',
+          onPress: () => null,
+        },
+        {
+          text: 'Ok',
+          onPress: () => {
+            this.props.navigation.navigate('LoginScreen');
+          },
+        },
+      ]);
+    } else {
+      this.props.navigation.navigate('MyDasboard');
+    }
   };
   //   goToEdit = id => {
   //     this.props.navigation.navigate('EditScreen', {id});
@@ -116,11 +129,11 @@ class MainScreen extends Component {
   };
 
   queryNameChange = e => {
-    const queryName = e.target.value;;
+    const queryName = e.target.value;
     this.setState({queryName});
   };
   queryCompanyChange = e => {
-    const queryCompany = e.target.value;;
+    const queryCompany = e.target.value;
     this.setState({queryCompany});
   };
 
@@ -141,7 +154,7 @@ class MainScreen extends Component {
         <Container>
           <ScrollView style={{marginBottom: 20}}>
             <View>
-              <Header style={{backgroundColor: '#00b894'}}>
+              <Header style={{backgroundColor: '#043353'}}>
                 <Left style={{flex: 1}}>
                   <TouchableOpacity
                     transparent
@@ -171,7 +184,11 @@ class MainScreen extends Component {
                   </TouchableOpacity>
                 </Right>
               </Header>
-              <View style={{backgroundColor: '#00b894'}}>
+              <View
+                style={{
+                  backgroundColor: '#043353',
+                  borderBottomRightRadius: 10,
+                }}>
                 <View style={{marginLeft: 10, marginRight: 10, marginTop: 10}}>
                   <Text style={style.searchTitle}>Looking For Job :</Text>
                   <Input
@@ -196,8 +213,9 @@ class MainScreen extends Component {
                       </Text>
                     </View>
                     <View>
-                      <ScrollView showsHorizontalScrollIndicator={false}>
+                      <ScrollView>
                         <List
+                          showsHorizontalScrollIndicator={false}
                           horizontal={true}
                           dataArray={this.props.company.data}
                           renderRow={(data, i) => (
@@ -206,12 +224,13 @@ class MainScreen extends Component {
                                 <View
                                   style={{
                                     width: 120,
-                                    height: 40,
+                                    height: 50,
                                     alignSelf: 'center',
+                                    borderWidth: 0.2,
                                   }}>
                                   <Image
                                     source={{uri: data.logo}}
-                                    style={style.imageCard}
+                                    style={style.imageCardComp}
                                   />
                                 </View>
                               </View>
@@ -275,6 +294,11 @@ const style = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
+  styleTextCompany: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: 'red',
+  },
   text: {
     flexDirection: 'row',
   },
@@ -325,6 +349,13 @@ const style = StyleSheet.create({
     height: 100,
     width: 100,
     resizeMode: 'contain',
+  },
+  imageCardComp: {
+    flex: 1,
+    height: 100,
+    width: 100,
+    resizeMode: 'contain',
+    margin: 5,
   },
 });
 

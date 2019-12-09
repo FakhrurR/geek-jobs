@@ -11,12 +11,16 @@ import {
   DELETE_USER_PENDING,
   DELETE_USER_REJECTED,
   DELETE_USER_FULFILLED,
+  LOGIN_USER_PENDING,
+  LOGIN_USER_REJECTED,
+  LOGIN_USER_FULFILLED,
 } from './../constants/actionTypes';
 
 const initialState = {
   isLoading: false,
   isError: false,
   data: [],
+  token: '',
 };
 
 const user = (state = initialState, action) => {
@@ -103,6 +107,26 @@ const user = (state = initialState, action) => {
         isLoading: false,
         isError: false,
         data: state.data.filter(data => data.id !== action.payload.data.id),
+      };
+
+    case LOGIN_USER_PENDING:
+      return {
+        ...state,
+        isLoading: true,
+      };
+
+    case LOGIN_USER_REJECTED:
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+      };
+    case LOGIN_USER_FULFILLED:
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        data: action.payload.data.data,
       };
 
     default:

@@ -13,36 +13,46 @@ import ProfileScreen from './screens/ProfileScreen';
 import DetailCompany from './screens/DetailCompany';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
-import WelcomeScreen from './screens/WelcomeScreen';
 import SplashScreen from './screens/SplashScreen';
 import AddJob from './screens/Crud/jobs/AddJob';
+import EditJob from './screens/Crud/jobs/EditJob';
 import AddCompany from './screens/Crud/companies/AddCompany';
 import AddCategory from './screens/Crud/categories/AddCategory';
+import EditCategory from './screens/Crud/categories/EditCategory';
 import ListCategory from './screens/Crud/categories/ListCategory';
 import ListCompany from './screens/Crud/companies/ListCompany';
 import ListJob from './screens/Crud/jobs/ListJob';
 import SearchScreen from './screens/SearchScreen';
 import MyDasboard from './screens/MyDasboard';
+import EditCompany from './screens/Crud/companies/EditCompany';
+import {StatusBar} from 'react-native';
 
 export default class App extends Component {
   render() {
     return (
       <Provider store={store}>
+        <StatusBar backgroundColor="#043353" barStyle="light-content" />
         <AppContainer />
       </Provider>
     );
   }
 }
 const StackNavigation = createStackNavigator({
-  // ListJob,
-  // MyDasboard: {
-  //   screen: MyDasboard,
-  // },
+  SplashScreen: {
+    screen: SplashScreen,
+    navigationOptions: {
+      header: null,
+    },
+  },
   LoginScreen: {
     screen: LoginScreen,
     navigationOptions: {
       header: null,
     },
+  },
+
+  MyDasboard: {
+    screen: MyDasboard,
   },
   MainScreen,
   DetailScreen,
@@ -51,16 +61,17 @@ const StackNavigation = createStackNavigator({
     screen: DrawerNavigator,
   },
   SearchScreen,
-  // DetailCompany,
-  // SplashScreen,
+  DetailCompany,
   // WelcomeScreen: {
   //   screen: WelcomeScreen,
   //   navigationOptions: {
   //     header: null,
   //   },
   // },
-  // ListCategory,
-  // ListCompany,
+  ListJob,
+  ListCategory,
+  EditCategory,
+  ListCompany,
   // LoginScreen: {
   //   screen: LoginScreen,
   //   navigationOptions: {
@@ -73,18 +84,31 @@ const StackNavigation = createStackNavigator({
       header: null,
     },
   },
-  // AddJob: {
-  //   screen: AddJob,
-  //   navigationOptions: {
-  //     header: null,
-  //   },
-  // },
-  // AddCompany: {
-  //   screen: AddCompany,
-  //   navigationOptions: {
-  //     header: null,
-  //   },
-  // },
+  AddJob: {
+    screen: AddJob,
+    navigationOptions: {
+      header: null,
+    },
+  },
+  EditJob: {
+    screen: EditJob,
+    navigationOptions: {
+      header: null,
+    },
+  },
+  AddCompany: {
+    screen: AddCompany,
+    navigationOptions: {
+      header: null,
+    },
+  },
+
+  EditCompany: {
+    screen: EditCompany,
+    navigationOptions: {
+      header: null,
+    },
+  },
 
   AddCategory: {
     screen: AddCategory,

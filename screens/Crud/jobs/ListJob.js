@@ -40,6 +40,8 @@ import {Drawer} from 'native-base';
 
 import {getJob} from './../../../redux/actions/job';
 
+import {deleteJob} from './../../../redux/actions/job';
+
 class ListJob extends Component {
   constructor(props) {
     super(props);
@@ -77,28 +79,23 @@ class ListJob extends Component {
   goToProfile = () => {
     this.props.navigation.navigate('ProfileScreen');
   };
-  //   goToEdit = id => {
-  //     this.props.navigation.navigate('EditScreen', {id});
-  //   };
-  //   deleteItem = id => {
-  //     Alert.alert('Delete Item', 'Are you Sure?', [
-  //       {
-  //         text: 'Cancel',
-  //         onPress: () => null,
-  //       },
-  //       {
-  //         text: 'Ok',
-  //         onPress: () => this.props.dispatch(deleteTodo(id)),
-  //       },
-  //     ]);
-  //   };
 
   componentDidMount() {
     this.getData();
+    this.focusListener = this.props.navigation.addListener('didFocus', () => {
+      this.getData();
+    });
+  }
+  componentWillUnmount () {
+    this.focusListener.remove();
   }
 
   getData = async () => {
     await this.props.dispatch(getJob());
+  };
+
+  goToAddJob = () => {
+    this.props.navigation.navigate('AddJob');
   };
 
   queryNameChange = e => {
@@ -110,8 +107,20 @@ class ListJob extends Component {
     this.setState({queryCompany});
   };
 
-  doSearch = async (name, company) => {
-    await this.props.dispatch(getJobSearch(name, company));
+  deleteItem = id => {
+    Alert.alert('Delete Item', 'Are you Sure?', [
+      {
+        text: 'Cancel',
+        onPress: () => null,
+      },
+      {
+        text: 'Ok',
+        onPress: () => {
+          this.props.dispatch(deleteJob(id));
+          this.getData();
+        },
+      },
+    ]);
   };
 
   render() {
@@ -121,60 +130,85 @@ class ListJob extends Component {
       <Container>
         <ScrollView style={{marginBottom: 20}}>
           <View>
-            <Header style={{backgroundColor: '#00b894'}}>
-              <Left style={{flex: 1}} />
+            <Header style={{backgroundColor: '#043353'}}>
+              <Left style={{flex: 1}}>
+                <TouchableOpacity
+                  onPress={() => this.props.navigation.goBack()}>
+                  <Icon name="times" type="font-awesome" color="white" />
+                </TouchableOpacity>
+              </Left>
               <Body>
                 <Title
                   style={{
-                    alignItems: 'center',
-                    alignContent: 'center',
                     fontWeight: '700',
                     color: '#fff',
+                    alignSelf: 'center',
                   }}>
-                  LISTJOBS
+                  JOBS
                 </Title>
               </Body>
-              <Right style={{flex: 1}} />
+              <Right style={{flex: 1}}>
+                <TouchableOpacity onPress={() => this.goToAddJob()}>
+                  <Icon name="plus" type="font-awesome" color="white" />
+                </TouchableOpacity>
+              </Right>
             </Header>
-            <View style={{backgroundColor: '#00b894'}}>
-              <View style={{marginLeft: 10, marginRight: 10, marginTop: 10}}>
-                <Text style={style.searchTitle}>Find Jobs : </Text>
-                <Input
-                  placeholder="Search..."
-                  left
-                  icon="search"
-                  family="font-awesome"
-                  iconSize={14}
-                  iconColor="black"
-                  style={{borderRadius: 30}}
-                  onPress={() => this.goToSearch()}
-                />
-              </View>
-            </View>
             {this.props.job.isLoading && <Spinner />}
             {!this.props.job.isLoading && (
               <View>
                 <React.Fragment>
                   <View>
                     {this.props.job.data.map((v, i) => (
-                      <TouchableOpacity
-                        key={i.toString()}
-                        onPress={() => this.goToDetail(v.id)}>
-                        <Card style={style.card}>
-                          <View style={style.cardItem}>
-                            <View style={{width: 120, height: 40}}>
-                              <Image
-                                source={{uri: v.logo}}
-                                style={style.imageCard}
-                              />
-                            </View>
-                            <View style={{width: 130, height: 30}}>
-                              <Text style={style.text}>{v.name}</Text>
-                              <Text style={{fontSize: 8}}>{v.location}</Text>
-                            </View>
+                      <Card style={style.card} key={i.toString()}>
+                        <View style={style.cardItem}>
+                          <View style={{width: 120, height: 40}}>
+                            <Image
+                              source={{uri: v.logo}}
+                              style={style.imageCard}
+                            />
                           </View>
-                        </Card>
-                      </TouchableOpacity>
+                          <View style={{width: 130, height: 30}}>
+                            <Text style={style.text}>{v.name}</Text>
+                            <Text style={{fontSize: 8}}>{v.location}</Text>
+                          </View>
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            flex: 1,
+                            alignSelf: 'flex-end',
+                            marginTop: 20,
+                            marginRight: 20,
+                          }}>
+                          <TouchableOpacity
+                            style={{marginRight: 10}}
+                            onPress={() =>
+                              this.props.navigation.navigate('EditJob', {
+                                id: v.id,
+                                name: v.name,
+                                description: v.description,
+                                id_category: v.id_category,
+                                salary: v.salary,
+                                location: v.id_location,
+                                id_company: v.id_company,
+                              })
+                            }>
+                            <Icon
+                              name="edit"
+                              type="font-awesome"
+                              color="blue"
+                            />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => this.deleteItem(v.id)}>
+                            <Icon
+                              name="trash"
+                              type="font-awesome"
+                              color="red"
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      </Card>
                     ))}
                   </View>
                 </React.Fragment>
@@ -223,7 +257,7 @@ const style = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     marginBottom: 10,
-    borderRadius: 30,
+    borderRadius: 15,
   },
   date: {
     fontSize: 15,

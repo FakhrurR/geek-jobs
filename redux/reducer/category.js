@@ -56,7 +56,7 @@ const category = (state = initialState, action) => {
       return {
         isLoading: false,
         isError: false,
-        data: [...state.data, action.payload.data],
+        data: [...state.data, action.payload.data.data],
       };
 
     case UPDATE_CATEGORY_PENDING:

@@ -22,14 +22,15 @@ import {
 import {connect} from 'react-redux';
 import {Input, Button} from 'galio-framework';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {getCategory} from './../../../redux/actions/category';
-import {addCategory} from './../../../redux/actions/category';
+import {getCategory , updateCategory} from './../../../redux/actions/category';
 
 class AddCategory extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: '',
+      selected2: undefined,
+      name: this.props.navigation.getParam('name'),
+      id: this.props.navigation.getParam('id'),
     };
   }
 
@@ -37,71 +38,65 @@ class AddCategory extends Component {
     header: null,
   };
 
-  addCategory = async data => {
-    await this.props.dispatch(addCategory(data));
+  onValueChange2(value) {
+    this.setState({
+      selected2: value,
+    });
+  }
+
+  updateCategory = async (id, data) => {
+    await this.props.dispatch(updateCategory(id, data));
+  };
+
+  getData = async () => {
+    await this.props.dispatch(getCategory());
   };
 
   handleSubmit = () => {
     let data = {
       name: this.state.name,
     };
-
-    console.log(data);
-    this.addCategory(data)
+    let id = this.state.id;
+    console.log(id, data);
+    this.updateCategory(id, data)
       .then(res => {
-        alert('Success to Add Category');
+        console.log(res);
+        alert('Success to Edit Category');
+        this.getData();
         this.props.navigation.goBack();
       })
       .catch(err => {
         console.log(err);
-        this.props.navigation.goBack();
       });
   };
 
   handleCategoryChange = text => {
-    console.log('category :' + text);
-    this.setState({
-      name: text,
-    });
+    console.log('password :' + text);
+    this.setState({name : text});
   };
 
   render() {
     return (
       <Container>
-        <View
-          style={{
-            backgroundColor: '#043353',
-            borderBottomRightRadius: 20,
-            borderBottomLeftRadius: 20,
-          }}>
-          {/* <TouchableOpacity
-          style={{marginTop: 20}}
+        <TouchableOpacity
+          style={{margin: 20}}
           onPress={() => this.props.navigation.goBack()}>
           <Icon name="times" size={20} />
-        </TouchableOpacity> */}
-          <Text
-            style={{
-              fontWeight: '700',
-              fontSize: 25,
-              marginTop: 10,
-              marginBottom: 10,
-              textAlign: 'center',
-              color: '#fff',
-            }}>
-            CREATE CATEGORY
-          </Text>
-        </View>
+        </TouchableOpacity>
         <View style={styles.container}>
+          <Text style={{fontWeight: '700', fontSize: 25, marginBottom: 20}}>
+            EDIT CATEGORY
+          </Text>
           <Input
             placeholder="Category Name"
             style={{borderRadius: 30}}
             onChangeText={this.handleCategoryChange}
-            value={this.state.name}
+            defaultValue={this.state.name}
           />
           <Button
-            style={{borderRadius: 20, backgroundColor: '#000'}}
+            style={{borderRadius: 20}}
             onPress={() => this.handleSubmit()}>
-            ADD
+            Edit
           </Button>
         </View>
       </Container>

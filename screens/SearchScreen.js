@@ -10,7 +10,6 @@ import {
   Image,
   SafeAreaView,
   Alert,
-  Picker,
 } from 'react-native';
 import axios from 'axios';
 import {
@@ -32,24 +31,26 @@ import {
   Container,
   CardItem,
   ActionSheet,
+  Picker,
 } from 'native-base';
 // import Shimmer from './../components/Shimmer'
 import {Avatar} from 'react-native-elements';
 import {Input, Block} from 'galio-framework';
 import {Icon, SearchBar, Overlay} from 'react-native-elements';
-import IconBar from 'react-native-vector-icons/FontAwesome';
+import IconBar from 'react-native-vector-icons/FontAwesome5';
 import {connect} from 'react-redux';
 import {TouchableOpacity, FlatList} from 'react-native-gesture-handler';
 import {Drawer} from 'native-base';
 
 import {getJob} from './../redux/actions/job';
 import {getJobSearch} from './../redux/actions/job';
+import {getJobOrderBy} from './../redux/actions/job';
 
 class SearchScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      mQuery: '',
+      mQuery: 'date_updated',
       queryName: '',
       queryCompany: '',
       data: [],
@@ -97,21 +98,32 @@ class SearchScreen extends Component {
     this.props.dispatch(getJobSearch(name, company));
   };
 
+  getJobOrderBy = mQuery => {
+    this.props.dispatch(getJobOrderBy(mQuery));
+  };
+
   goToMain = () => {
     this.props.navigation.navigate('MainScreen');
   };
 
+  mQueryOrderByChange = text => {
+    console.log('order : ' + text);
+    this.setState({mQuery: text});
+  };
   render() {
-    // const {data} = this.props.job;
-    const {search} = this.state;
     return (
       <Container>
         <ScrollView style={{marginBottom: 20}}>
           <View>
-            <Header style={{backgroundColor: '#00b894'}}>
+            <Header style={{backgroundColor: '#043353'}}>
               <Left style={{flex: 1}}>
                 <TouchableOpacity transparent onPress={() => this.goToMain()}>
-                  <Icon name="arrow-left" type="font-awesome" color="#fff" />
+                  <IconBar
+                    name="times"
+                    type="font-awesome"
+                    color="#fff"
+                    size={15}
+                  />
                 </TouchableOpacity>
               </Left>
               <Body>
@@ -122,27 +134,14 @@ class SearchScreen extends Component {
                     fontWeight: '700',
                     color: '#fff',
                   }}>
-                  SEARCH
+                  Find Jobs
                 </Title>
               </Body>
               <Right style={{flex: 1}}>
-                
-                  <Picker
-                   icon="arrow"
-                    selectedValue={this.state.order}
-                    style={{height: 50, width: 100}}
-                    onValueChange={(itemValue, itemIndex) =>
-                      this.setState({order: itemValue})
-                    }>
-                    <Picker.Item label="Java" value="java" />
-                    <Picker.Item label="JavaScript" value="js" />
-                  </Picker>
-  
               </Right>
             </Header>
-            <View style={{backgroundColor: '#00b894'}}>
-              <View style={{marginLeft: 10, marginRight: 10, marginTop: 10}}>
-                <Text style={style.searchTitle}>Find Jobs : </Text>
+            <View>
+              <View style={{marginLeft: 10, marginRight: 10}}>
                 <Input
                   placeholder="Search..."
                   left
@@ -155,6 +154,21 @@ class SearchScreen extends Component {
                   onSubmitEditing={() => this.doSearch(this.state.queryName)}
                   value={this.state.queryName}
                 />
+              </View>
+              <View>
+              <Picker
+                  selectedValue={this.state.mQuery}
+                  style={{marginLeft: 20, marginRight: 20, borderBottomWidth: 20}}
+                  onValueChange={(itemValue, itemIndex) => {
+                    //  this.setState({mQuery: itemValue})
+                    this.mQueryOrderByChange(itemValue);
+                    this.getJobOrderBy(this.state.mQuery);
+                  }}>
+                  <Picker.Item label="Select" value="" />
+                  <Picker.Item label="Name" value="name" />
+                  <Picker.Item label="Company" value="company" />
+                  <Picker.Item label="Latest" value="date_updated" />
+                </Picker>
               </View>
             </View>
             {this.props.job.isLoading && <Spinner />}

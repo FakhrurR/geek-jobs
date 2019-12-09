@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {
@@ -10,6 +11,7 @@ import {
 import {connect} from 'react-redux';
 import {Input, Button} from 'galio-framework';
 import {addUser} from '../redux/actions/user';
+import {Left, Icon, Header, Body, Right} from 'native-base';
 
 const Toast = props => {
   if (props.visible) {
@@ -29,11 +31,14 @@ class RegisterScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      name: '',
       username: '',
       email: '',
       password: '',
       level: '',
       isSubmit: false,
+      showMessage: false,
+      isMessage: '',
     };
   }
 
@@ -50,6 +55,11 @@ class RegisterScreen extends Component {
     this.setState({username: text});
   };
 
+  handleNameChange = text => {
+    console.log('username :' + text);
+    this.setState({name: text});
+  };
+
   handleEmailChange = text => {
     console.log('Email :' + text);
     this.setState({email: text});
@@ -61,23 +71,47 @@ class RegisterScreen extends Component {
   };
 
   handleSubmit = () => {
-    let account = {};
-    account.email = this.state.email;
-    account.username = this.state.username;
-    account.password = this.state.password;
-    
-    this.addRegister(account)
-      .then(res => {
-        this.setState({isSubmit: true}, () => {
-          this.hideToast();
-        });
-        console.log(res.data);
-      })
-      .catch(err => {
-        this.setState({isSubmit: false});
-        console.log(err);
-        return;
+    this.setState({isLoading: true});
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (
+      this.state.email === '' ||
+      this.state.password === '' ||
+      this.state.name === '' ||
+      this.state.username === ''
+    ) {
+      this.setState({isLoading: false});
+      this.setState({showMessage: true, isMessage: 'Please Fill All Field'});
+    } else if (reg.test(this.state.email) === false) {
+      this.setState({isLoading: false});
+      this.setState({
+        showMessage: true,
+        isMessage: 'Bad Format Email,Please Fill Email With Correct Email',
       });
+      return false;
+    } else {
+      let account = {};
+      account.email = this.state.email;
+      account.username = this.state.username;
+      account.password = this.state.password;
+      account.name = this.state.name;
+
+      console.log(account);
+
+      this.addRegister(account)
+        .then(res => {
+          this.setState({isSubmit: true}, () => {
+            this.hideToast();
+          });
+          alert('Success Add User');
+          this.goToLogin();
+          console.log(res.data);
+        })
+        .catch(err => {
+          this.setState({isSubmit: false});
+          console.log(err);
+          return;
+        });
+    }
   };
 
   hideToast = () => {
@@ -92,6 +126,17 @@ class RegisterScreen extends Component {
         <Text style={{fontWeight: '700', fontSize: 30, marginBottom: 30}}>
           SIGN UP
         </Text>
+        {this.state.showMessage && (
+          <Text style={{textAlign: 'center', fontWeight: 'bold', color: 'red'}}>
+            {this.state.isMessage}
+          </Text>
+        )}
+        <Input
+          placeholder="Name"
+          style={{borderRadius: 30}}
+          onChangeText={this.handleNameChange}
+          value={this.state.name}
+        />
         <Input
           placeholder="Email"
           style={{borderRadius: 30}}
@@ -112,17 +157,17 @@ class RegisterScreen extends Component {
           onChangeText={this.handlePasswordChange}
           value={this.state.password}
         />
-        <View>
+        <TouchableOpacity>
           <Button
             style={styles.signupButton}
             onPress={() => this.handleSubmit()}>
             Sign Up
           </Button>
-        </View>
+        </TouchableOpacity>
         <View style={{flexDirection: 'row'}}>
           <Text>Already have an account?</Text>
           <TouchableOpacity onPress={() => this.goToLogin()}>
-            <Text style={{color: '#3498db'}}> Log in</Text>
+            <Text style={{color: '#3498db', fontWeight: 'bold'}}> Log in</Text>
           </TouchableOpacity>
         </View>
       </View>

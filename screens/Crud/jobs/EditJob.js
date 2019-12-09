@@ -21,25 +21,24 @@ import {connect} from 'react-redux';
 import {Input, Button} from 'galio-framework';
 import {getCompany} from './../../../redux/actions/company';
 import {getCategory} from './../../../redux/actions/category';
-import {addJob, getJob} from './../../../redux/actions/job';
+import {updateJob} from './../../../redux/actions/job';
 
 class AddJob extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: '',
-      description: '',
-      id_category: '',
-      salary: '',
-      location: '',
-      id_company: '',
-      isMessage: '',
+      id: this.props.navigation.getParam('id'),
+      name: this.props.navigation.getParam('name'),
+      description: this.props.navigation.getParam('description'),
+      id_category: this.props.navigation.getParam('id_category'),
+      salary: this.props.navigation.getParam('salary'),
+      location: this.props.navigation.getParam('location'),
+      id_company: this.props.navigation.getParam('id_company'),
     };
   }
 
   componentDidMount() {
     this.getData();
-    this.getJob();
   }
 
   getData = async () => {
@@ -47,12 +46,8 @@ class AddJob extends Component {
     await this.props.dispatch(getCategory());
   };
 
-  getJob = async () => {
-    await this.props.dispatch(getJob());
-  };
-
-  addJobField = async data => {
-    await this.props.dispatch(addJob(data));
+  addJobField = async (id, data) => {
+    await this.props.dispatch(updateJob(id, data));
   };
 
   handleSubmit = () => {
@@ -65,12 +60,13 @@ class AddJob extends Component {
       id_company: this.state.id_company,
     };
 
-    console.log(dataJob);
-    this.addJobField(dataJob)
+    let id = this.state.id;
+
+    console.log(id, dataJob);
+    this.addJobField(id, dataJob)
       .then(res => {
         // console.log(res);
-        alert('Success Insert Data');
-        this.getJob();
+        alert('Success Update Data');
         this.props.navigation.goBack();
       })
       .catch(err => {
@@ -94,15 +90,13 @@ class AddJob extends Component {
               fontSize: 25,
               marginBottom: 20,
               marginTop: 20,
-              color: '#fff',
               textAlign: 'center',
+              color: '#fff',
             }}>
-            CREATE JOB
+            UPDATE JOB
           </Text>
         </View>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          Containerstyle={styles.container}>
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{marginLeft: 20, marginRight: 20, marginBottom: 80}}>
             <Input
               placeholder="Job Name"
@@ -135,7 +129,7 @@ class AddJob extends Component {
                 placeholderIconColor="#007aff"
                 selectedValue={this.state.id_category}
                 onValueChange={(itemValue, itemIndex) =>
-                  this.setState({id_category: itemValue})
+                  this.setState({category: itemValue})
                 }>
                 <Picker.Item label="Select Category" value="" />
                 {this.props.category.data.map((v, i) => (
@@ -170,7 +164,7 @@ class AddJob extends Component {
                 placeholderIconColor="#007aff"
                 selectedValue={this.state.id_company}
                 onValueChange={(itemValue, itemIndex) =>
-                  this.setState({id_company: itemValue})
+                  this.setState({company: itemValue})
                 }>
                 <Picker.Item label="Select Company" value="" />
                 {this.props.company.data.map((v, i) => (

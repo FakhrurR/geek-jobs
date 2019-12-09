@@ -23,48 +23,43 @@ import IconBar from 'react-native-vector-icons/FontAwesome5';
 import {Input, Button} from 'galio-framework';
 import ImagePicker from 'react-native-image-picker';
 
-import {addCompany} from './../../../redux/actions/company';
+import {updateCompany} from './../../../redux/actions/company';
 class AddCompany extends Component {
   constructor(props) {
     super(props);
     this.state = {
       selected2: undefined,
-      name: '',
-      logo: null,
+      id: this.props.navigation.getParam('id'),
+      name: this.props.navigation.getParam('name'),
+      logo: this.props.navigation.getParam('logo'),
       isLogo: false,
-      location: '',
-      description: '',
+      location: this.props.navigation.getParam('location'),
+      description: this.props.navigation.getParam('description'),
     };
   }
 
-  AddCompanyField = async data => {
-    await this.props.dispatch(addCompany(data));
+  EditCompanyField = async (id, data) => {
+    await this.props.dispatch(updateCompany(id, data));
   };
 
   handleSubmit = () => {
-    // let data = {
-    //   name: this.state.name,
-    //   logo: this.state.logo,
-    //   location: this.state.location,
-    //   description: this.state.description,
-    // };
-    // console.log(data);
+    const id = this.state.id;
     const data = new FormData();
     data.append('name', this.state.name);
-    data.append('logo', {
-      name: this.state.logo.fileName,
-      type: this.state.logo.type,
-      uri:
-        Platform.OS === 'android'
-          ? this.state.logo.uri
-          : this.state.logo.uri.replace('file://', ''),
-    });
+    // data.append('logo', {
+    //   name: this.state.logo.fileName,
+    //   type: this.state.logo.type,
+    //   uri:
+    //     Platform.OS === 'android'
+    //       ? this.state.logo.uri
+    //       : this.state.logo.uri.replace('file://', ''),
+    // });
     data.append('location', this.state.location);
     data.append('description', this.state.description);
 
-    this.AddCompanyField(data)
+    this.EditCompanyField(id, data)
       .then(res => {
-        alert('Success to Add Data Company');
+        alert('Success to Update Data Company');
         this.setState({name: '', logo: null, location: '', description: ''});
         this.props.navigation.goBack();
       })
@@ -80,7 +75,7 @@ class AddCompany extends Component {
     };
     ImagePicker.launchImageLibrary(options, response => {
       if (response.uri) {
-        this.setState({logo: response});
+        this.setState({logo: response.uri});
       }
     });
   };
@@ -104,7 +99,7 @@ class AddCompany extends Component {
               textAlign: 'center',
               color: '#fff',
             }}>
-            CREATE COMPANY
+            UPDATE COMPANY
           </Text>
         </View>
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -131,7 +126,7 @@ class AddCompany extends Component {
               )}
               {logo && (
                 <Image
-                  source={{uri: logo.uri}}
+                  source={{uri: logo}}
                   style={{
                     width: 200,
                     height: 200,

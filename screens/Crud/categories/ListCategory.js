@@ -29,6 +29,7 @@ import {
   Container,
   CardItem,
 } from 'native-base';
+import {Modal} from 'react-native';
 // import Shimmer from './../components/Shimmer'
 import {Avatar} from 'react-native-elements';
 import {Input, Block} from 'galio-framework';
@@ -37,16 +38,21 @@ import IconBar from 'react-native-vector-icons/FontAwesome';
 import {connect} from 'react-redux';
 import {TouchableOpacity, FlatList} from 'react-native-gesture-handler';
 import {Drawer} from 'native-base';
+import AddCategory from './AddCategory';
 
 import {getCategory} from './../../../redux/actions/category';
+import {addCategory} from './../../../redux/actions/category';
+import {
+  deleteCategory,
+  updateCategory,
+} from './../../../redux/actions/category';
 
 class ListCategory extends Component {
   constructor(props) {
     super(props);
     this.state = {
       mQuery: '',
-      queryName: '',
-      queryCompany: '',
+      isOpenAdd: false,
     };
   }
 
@@ -54,45 +60,47 @@ class ListCategory extends Component {
     header: null,
   };
 
-  closeDrawer = () => {
-    this._drawer._root.close();
-  };
-
-  openDrawer = () => {
-    this._drawer._root.open();
-  };
-
-  goToDetail = id => {
-    this.props.navigation.navigate('DetailScreen', {id});
-  };
-
-  goToProfile = () => {
-    this.props.navigation.navigate('ProfileScreen');
-  };
-
-  goToSearch = () => {
-    this.props.navigation.navigate('SearchScreen');
-  };
-
-  goToProfile = () => {
-    this.props.navigation.navigate('ProfileScreen');
-  };
-
   componentDidMount() {
     this.getData();
+    const {navigation} = this.props;
+    //Adding an event listner om focus
+    //So whenever the screen will have focus it will set the state to zero
+    this.focusListener = navigation.addListener('didFocus', () => {
+      this.getData();
+    });
+  }
+
+  componentWillUnmount() {
+    this.focusListener.remove();
   }
 
   getData = async () => {
     await this.props.dispatch(getCategory());
   };
 
-  queryNameChange = e => {
-    const queryName = e.target.value;
-    this.setState({queryName});
+  goToAddCategory = () => {
+    this.props.navigation.navigate('AddCategory');
+    // this.setState({isOpenAdd: true});
   };
-  queryCompanyChange = e => {
-    const queryCompany = e.target.value;
-    this.setState({queryCompany});
+
+  // editItem = async id => {
+  //   this.props.navigation.navigate('EditCategory', {id});
+  // };
+
+  deleteItem = id => {
+    Alert.alert('Delete Item', 'Are you Sure?', [
+      {
+        text: 'Cancel',
+        onPress: () => null,
+      },
+      {
+        text: 'Ok',
+        onPress: async () => {
+          await this.props.dispatch(deleteCategory(id));
+          this.getData();
+        },
+      },
+    ]);
   };
 
   render() {
@@ -102,50 +110,74 @@ class ListCategory extends Component {
       <Container>
         <ScrollView style={{marginBottom: 20}}>
           <View>
-            <Header style={{backgroundColor: '#00b894'}}>
-              <Left style={{flex: 1}} />
+            <Header style={{backgroundColor: '#043353'}}>
+              <Left style={{flex: 1}}>
+                <TouchableOpacity
+                  onPress={() => this.props.navigation.goBack()}>
+                  <Icon
+                    name="times"
+                    type="font-awesome"
+                    size={20}
+                    color="white"
+                  />
+                </TouchableOpacity>
+              </Left>
               <Body>
                 <Title
                   style={{
                     fontWeight: '700',
                     color: '#fff',
                   }}>
-                  LISTCATEGORY
+                  CATEGORY
                 </Title>
               </Body>
-              <Right style={{flex: 1}} />
+              <Right style={{flex: 1}}>
+                <TouchableOpacity onPress={() => this.goToAddCategory()}>
+                  <Icon name="plus" type="font-awesome" color="white" />
+                </TouchableOpacity>
+              </Right>
             </Header>
-            <View style={{backgroundColor: '#00b894'}}>
-              <View style={{marginLeft: 10, marginRight: 10, marginTop: 10}}>
-                <Text style={style.searchTitle}>Find Category : </Text>
-                <Input
-                  placeholder="Search..."
-                  left
-                  icon="search"
-                  family="font-awesome"
-                  iconSize={14}
-                  iconColor="black"
-                  style={{borderRadius: 30}}
-                />
-              </View>
-            </View>
+            <Modal
+              animationType="slide"
+              transparent={false}
+              visible={this.state.isOpenAdd}>
+              <AddCategory />
+            </Modal>
             {this.props.category.isLoading && <Spinner />}
             {!this.props.category.isLoading && (
               <View>
                 <React.Fragment>
                   <View>
                     {this.props.category.data.map((v, i) => (
-                      <TouchableOpacity
-                        key={i.toString()}
-                        onPress={() => this.goToDetail(v.id)}>
-                        <Card style={style.card}>
-                          <View style={style.cardItem}>
-                            <View style={{width: 130, height: 30}}>
-                              <Text style={style.text}>{v.name}</Text>
-                            </View>
+                      <Card style={style.card} key={i.toString()}>
+                        <View style={style.cardItem}>
+                          <View style={{width: 200, height: 30}}>
+                            <Text style={style.text}>{v.name}</Text>
                           </View>
-                        </Card>
-                      </TouchableOpacity>
+                          <TouchableOpacity
+                            style={{marginRight: 10}}
+                            onPress={() =>
+                              this.props.navigation.navigate('EditCategory', {
+                                id: v.id,
+                                name: v.name,
+                              })
+                            }>
+                            <Icon
+                              name="edit"
+                              type="font-awesome"
+                              color="blue"
+                            />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => this.deleteItem(v.id)}>
+                            <Icon
+                              name="trash"
+                              type="font-awesome"
+                              color="red"
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      </Card>
                     ))}
                   </View>
                 </React.Fragment>
@@ -194,7 +226,7 @@ const style = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     marginBottom: 10,
-    borderRadius: 30,
+    borderRadius: 10,
   },
   date: {
     fontSize: 15,

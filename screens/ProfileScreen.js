@@ -13,8 +13,9 @@ import {
   Image,
   Text,
 } from 'native-base';
+import Icon2 from 'react-native-vector-icons/FontAwesome5';
 import {Avatar} from 'react-native-elements';
-import {ScrollView} from 'react-native-gesture-handler';
+import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 export default class ProfileScreen extends Component {
   static navigationOptions = {
     header: null,
@@ -27,15 +28,27 @@ export default class ProfileScreen extends Component {
   render() {
     return (
       <Container>
-        <Header style={{backgroundColor: '#00b894'}}>
+        <Header style={{backgroundColor: '#043353'}}>
           <Left>
             <Button transparent onPress={() => this.goToMain()}>
-              <Icon name="arrow-back" />
+              <Icon2 name="times" size={20} color="white" />
             </Button>
           </Left>
           <Body />
+          <Right>
+            <TouchableOpacity>
+              <Icon2 name="edit" size={20} color="white" />
+            </TouchableOpacity>
+          </Right>
         </Header>
-        <View style={{width: '100%', height: 190, backgroundColor: '#00b894'}}>
+        <View
+          style={{
+            width: '100%',
+            height: 190,
+            backgroundColor: '#043353',
+            borderBottomLeftRadius: 20,
+            borderBottomRightRadius: 20,
+          }}>
           <View
             style={{
               alignSelf: 'center',
@@ -71,7 +84,7 @@ export default class ProfileScreen extends Component {
               }}>
               Software Developer
             </Text>
-            <Text style={{fontSize: 10, alignSelf: 'center', color: '#fff',}}>
+            <Text style={{fontSize: 10, alignSelf: 'center', color: '#fff'}}>
               MichealJorche@hotmail.com
             </Text>
             <Text style={{fontSize: 10, alignSelf: 'center', color: '#fff'}}>
@@ -92,6 +105,17 @@ export default class ProfileScreen extends Component {
               managing software programs.
             </Text>
           </View>
+          <TouchableOpacity style={{marginTop: 30, alignItems: 'center'}}>
+            <Button style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Icon2
+                name="sign-out-alt"
+                size={20}
+                color="white"
+                style={{marginLeft: 10}}
+              />
+              <Text>Log Out</Text>
+            </Button>
+          </TouchableOpacity>
         </View>
       </Container>
     );

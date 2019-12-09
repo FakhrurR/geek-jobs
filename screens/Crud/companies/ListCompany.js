@@ -28,6 +28,7 @@ import {
   Thumbnail,
   Container,
   CardItem,
+  SwipeRow,
 } from 'native-base';
 // import Shimmer from './../components/Shimmer'
 import {Avatar} from 'react-native-elements';
@@ -39,6 +40,7 @@ import {TouchableOpacity, FlatList} from 'react-native-gesture-handler';
 import {Drawer} from 'native-base';
 
 import {getCompany} from './../../../redux/actions/company';
+import {deleteCompany} from './../../../redux/actions/company';
 
 class ListCompany extends Component {
   constructor(props) {
@@ -72,6 +74,13 @@ class ListCompany extends Component {
 
   componentDidMount() {
     this.getData();
+    this.focusListener = this.props.navigation.addListener('didFocus', () => {
+      this.getData();
+    });
+  }
+
+  componentWillUnmount() {
+    this.focusListener.remove();
   }
 
   getData = async () => {
@@ -87,64 +96,107 @@ class ListCompany extends Component {
     this.setState({queryCompany});
   };
 
+  deleteItem = id => {
+    Alert.alert('Delete Item', 'Are you Sure?', [
+      {
+        text: 'Cancel',
+        onPress: () => null,
+      },
+      {
+        text: 'Ok',
+        onPress: () => {
+          this.props.dispatch(deleteCompany(id));
+          this.getData();
+        },
+      },
+    ]);
+  };
+
+  goToAddCompany = () => {
+    this.props.navigation.navigate('AddCompany');
+  };
+
   render() {
-    // const {data} = this.props.job;
-    const {search} = this.state;
     return (
       <Container>
         <ScrollView style={{marginBottom: 20}}>
           <View>
-            <Header style={{backgroundColor: '#00b894'}}>
-              <Left style={{flex: 1}} />
+            <Header style={{backgroundColor: '#043353'}}>
+              <Left style={{flex: 1}}>
+                <TouchableOpacity
+                  onPress={() => this.props.navigation.goBack()}>
+                  <Icon name="times" type="font-awesome" color="white" />
+                </TouchableOpacity>
+              </Left>
               <Body>
                 <Title
                   style={{
                     fontWeight: '700',
                     color: '#fff',
                   }}>
-                  LISTCOMPANY
+                  COMPANY
                 </Title>
               </Body>
-              <Right style={{flex: 1}} />
+              <Right style={{flex: 1}}>
+                <TouchableOpacity onPress={() => this.goToAddCompany()}>
+                  <Icon name="plus" type="font-awesome" color="white" />
+                </TouchableOpacity>
+              </Right>
             </Header>
-            <View style={{backgroundColor: '#00b894'}}>
-              <View style={{marginLeft: 10, marginRight: 10, marginTop: 10}}>
-                <Text style={style.searchTitle}>Find Company : </Text>
-                <Input
-                  placeholder="Search..."
-                  left
-                  icon="search"
-                  family="font-awesome"
-                  iconSize={14}
-                  iconColor="black"
-                  style={{borderRadius: 30}}
-                />
-              </View>
-            </View>
             {this.props.company.isLoading && <Spinner />}
             {!this.props.company.isLoading && (
               <View>
                 <React.Fragment>
                   <View>
                     {this.props.company.data.map((v, i) => (
-                      <TouchableOpacity
-                        key={i.toString()}
-                        onPress={() => this.goToDetail(v.id)}>
-                        <Card style={style.card}>
-                          <View style={style.cardItem}>
-                            <View style={{width: 120, height: 40}}>
-                              <Image
-                                source={{uri: v.logo}}
-                                style={style.imageCard}
-                              />
-                            </View>
-                            <View style={{width: 130, height: 30}}>
-                              <Text style={style.text}>{v.name}</Text>
-                              <Text style={{fontSize: 8}}>{v.location}</Text>
-                            </View>
+                      <Card style={style.card} key={i.toString()}>
+                        <View style={style.cardItem}>
+                          <View style={{width: 120, height: 40}}>
+                            <Image
+                              source={{uri: v.logo}}
+                              style={style.imageCard}
+                            />
                           </View>
-                        </Card>
-                      </TouchableOpacity>
+                          <View style={{width: 130, height: 30}}>
+                            <Text style={style.text}>{v.name}</Text>
+                            <Text style={{fontSize: 8}}>{v.location}</Text>
+                          </View>
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            flex: 1,
+                            alignSelf: 'flex-end',
+                            marginTop: 20,
+                            marginRight: 20,
+                          }}>
+                          <TouchableOpacity
+                            style={{marginRight: 10}}
+                            onPress={() =>
+                              this.props.navigation.navigate('EditCompany', {
+                                id: v.id,
+                                name: v.name,
+                                logo: v.logo,
+                                location: v.location,
+                                description: v.description,
+                              })
+                            }>
+                            <Icon
+                              name="edit"
+                              type="font-awesome"
+                              color="blue"
+                            />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => this.deleteItem(v.id)}>
+                            <Icon
+                              name="trash"
+                              type="font-awesome"
+                              color="red"
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      </Card>
                     ))}
                   </View>
                 </React.Fragment>
@@ -193,7 +245,7 @@ const style = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     marginBottom: 10,
-    borderRadius: 30,
+    borderRadius: 20,
   },
   date: {
     fontSize: 15,

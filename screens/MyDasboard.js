@@ -10,6 +10,7 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import {
   Card,
   Button,
@@ -31,72 +32,217 @@ import {
 } from 'native-base';
 import {Icon} from 'react-native-elements';
 import {connect} from 'react-redux';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 class MyDasboard extends Component {
   static navigationOptions = {
-    headerTitleStyle: {
-      flex: 1,
-      textAlign: 'left',
-      color: '#fff',
-      fontWeight: '700',
-    },
-    headerStyle: {
-      backgroundColor: '#00b894',
-    },
-    title: 'My Dasboard',
+    header: null,
   };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: '',
+    };
+  }
+
+  componentDidMount(){
+    this.getEmail();
+  }
+
+  getEmail = async () => {
+    this.setState({email: await AsyncStorage.getItem('Authorization')});
+  }
+
+  goToDetail = id => {
+    this.props.navigation.navigate('DetailScreen', {id});
+  };
+
+  goToListJob = () => {
+    this.props.navigation.navigate('ListJob');
+  };
+
+  goToListCompany = () => {
+    this.props.navigation.navigate('ListCompany');
+  };
+
+  goToMain = () => {
+    this.props.navigation.navigate('MainScreen');
+  };
+
+  goToCompany = id => {
+    this.props.navigation.navigate('DetailCompany', {id});
+  };
+
+  goToProfile = () => {
+    this.props.navigation.navigate('ProfileScreen');
+  };
+
+  goToSearch = () => {
+    this.props.navigation.navigate('SearchScreen');
+  };
+
+  goToProfile = () => {
+    this.props.navigation.navigate('ProfileScreen');
+  };
+
+  goToListCategory = () => {
+    this.props.navigation.navigate('ListCategory');
+  };
+
+  goToLogin = () => {
+    Alert.alert('Log Out', 'Are you sure?', [
+      {
+        text: 'Cancel',
+        onPress: () => null,
+      },
+      {
+        text: 'Ok',
+        onPress: async () => {
+          try {
+            await AsyncStorage.removeItem('Authorization');
+            this.props.navigation.navigate('LoginScreen');
+          } catch (error) {
+            // Error saving data
+            console.log(error);
+          }
+        },
+      },
+    ]);
+  }
 
   render() {
     return (
-      <View style={{justifyContent: 'center', flex: 1, alignSelf: 'center'}}>
-        <Card>
-          <TouchableOpacity style={{marginTop: 10}}>
-            <Icon
-              name="address-book"
-              size={60}
-              type="font-awesome"
-              color="#00b894"
+      <View>
+        <View style={{backgroundColor: '#043353', borderBottomRightRadius: 30}}>
+          <View style={{marginLeft: 5, marginBottom: 5}}>
+            <View style={{flexDirection: 'row'}}>
+              <Text style={{fontSize: 30, fontWeight: '700', color: 'white'}}>
+                My Dashboard
+              </Text>
+              <TouchableOpacity
+                style={{
+                  marginTop: 10,
+                  marginRight: 15,
+                  flex: 1,
+                  alignItems: 'flex-end',
+                }}
+                onPress={() => this.goToLogin()}>
+                <Icon
+                  name="times-circle"
+                  type="font-awesome"
+                  color="white"
+                  size={30}
+                />
+              </TouchableOpacity>
+            </View>
+            <Text style={{fontSize: 15, color: 'white'}}>
+              {this.state.email}
+            </Text>
+          </View>
+        </View>
+        <View style={{marginTop: 10, width: '100%', height: 160}}>
+          <View style={{alignItems: 'center', marginTop: 5}}>
+            <Image
+              source={require('./../assets/img/logo.png')}
+              style={{width: 150, height: 150, resizeMode: 'contain'}}
             />
-            <Text style={{textAlign: 'center', fontWeight: '700'}}>
-              Manage Jobs
-            </Text>
-          </TouchableOpacity>
-        </Card>
-        <Card>
-          <TouchableOpacity style={{marginTop: 10}}>
-            <Icon name="search" size={60} type="font-awesome" color="#00b894" />
-            <Text style={{textAlign: 'center', fontWeight: '700'}}>
-              Find Jobs
-            </Text>
-          </TouchableOpacity>
-        </Card>
-        <View style={{flexDirection: 'row'}}>
-          <Card style={{marginRight: 30, marginLeft: 10, marginTop: 10}}>
-            <TouchableOpacity style={{marginTop: 10}}>
-              <Icon
-                name="building"
-                size={60}
-                type="font-awesome"
-                color="#00b894"
-              />
-              <Text style={{textAlign: 'center', fontWeight: '700'}}>
-                Manage Company
-              </Text>
-            </TouchableOpacity>
-          </Card>
-          <Card style={{marginRight: 30, marginLeft: 10, marginTop: 10}}>
-            <TouchableOpacity style={{marginTop: 10}}>
-              <Icon
-                name="address-card"
-                size={60}
-                type="font-awesome"
-                color="#00b894"
-              />
-              <Text style={{textAlign: 'center', fontWeight: '700'}}>
-                Manage Category
-              </Text>
-            </TouchableOpacity>
-          </Card>
+          </View>
+        </View>
+        <View>
+          <ScrollView
+            style={{marginBottom: 130, marginLeft: 10, marginRight: 10}}
+            showsVerticalScrollIndicator={false}>
+            <View style={{flexDirection: 'row', marginTop: 10}}>
+              <Card
+                style={{borderRadius: 5, backgroundColor: '#043353', flex: 1}}>
+                <TouchableOpacity
+                  style={{marginTop: 10, marginBottom: 10}}
+                  onPress={() => this.goToMain()}>
+                  <Icon
+                    name="home"
+                    size={60}
+                    type="font-awesome"
+                    color="#fff"
+                  />
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      fontWeight: '700',
+                      color: '#fff',
+                    }}>
+                    Home
+                  </Text>
+                </TouchableOpacity>
+              </Card>
+              <Card
+                style={{borderRadius: 5, backgroundColor: '#043353', flex: 1}}>
+                <TouchableOpacity
+                  style={{marginTop: 10, marginBottom: 10}}
+                  onPress={() => this.goToListJob()}>
+                  <Icon
+                    name="address-book"
+                    size={60}
+                    type="font-awesome"
+                    color="#fff"
+                  />
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      fontWeight: '700',
+                      color: 'white',
+                    }}>
+                    Manage Jobs
+                  </Text>
+                </TouchableOpacity>
+              </Card>
+            </View>
+            <View
+              style={{flexDirection: 'row', marginTop: 10, marginBottom: 20}}>
+              <Card
+                style={{borderRadius: 5, backgroundColor: '#043353', flex: 1}}>
+                <TouchableOpacity
+                  style={{marginTop: 10, marginBottom: 10}}
+                  onPress={() => this.goToListCompany()}>
+                  <Icon
+                    name="building"
+                    size={60}
+                    type="font-awesome"
+                    color="#fff"
+                  />
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      fontWeight: '700',
+                      color: 'white',
+                    }}>
+                    Manage Company
+                  </Text>
+                </TouchableOpacity>
+              </Card>
+              <Card
+                style={{borderRadius: 5, backgroundColor: '#043353', flex: 1}}>
+                <TouchableOpacity
+                  style={{marginTop: 10, marginBottom: 10}}
+                  onPress={() => this.goToListCategory()}>
+                  <Icon
+                    name="address-card"
+                    size={60}
+                    type="font-awesome"
+                    color="#fff"
+                  />
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      color: 'white',
+                      fontWeight: '700',
+                    }}>
+                    Manage Category
+                  </Text>
+                </TouchableOpacity>
+              </Card>
+            </View>
+          </ScrollView>
         </View>
       </View>
     );
