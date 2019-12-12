@@ -1,27 +1,35 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, StatusBar, Image} from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  StatusBar,
+  Image,
+  BackHandler,
+} from 'react-native';
 import {connect} from 'react-redux';
 import {Spinner} from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage';
 
 export default class SplashScreen extends Component {
-  async componentDidMount() {
-    try {
-      const value = await AsyncStorage.getItem('Authorization');
-      if (value !== null) {
-        setTimeout(() => {
-          this.props.navigation.navigate('MyDasboard');
-        }, 3000);
-      } else {
-        setTimeout(() => {
-          this.props.navigation.navigate('LoginScreen');
-        }, 3000);
-      }
-    } catch (e) {
-      console.log(e);
-    }
+  componentDidMount() {
+    this.getAsyncStorage();
   }
+
+  getAsyncStorage = async () => {
+    const value = await AsyncStorage.getItem('Authorization');
+    if (value !== null) {
+      setTimeout(() => {
+        this.props.navigation.navigate('MyDasboard');
+      }, 3000);
+    } else {
+      setTimeout(() => {
+        this.props.navigation.navigate('LoginScreen');
+      }, 3000);
+    }
+  };
 
   render() {
     return (

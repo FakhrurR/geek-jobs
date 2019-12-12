@@ -9,9 +9,12 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
+  Alert,
+  BackHandler,
 } from 'react-native';
+import {Input, Button, Item} from 'native-base';
 import {connect} from 'react-redux';
-import {Input, Button} from 'galio-framework';
+
 import AsyncStorage from '@react-native-community/async-storage';
 import {getUser, loginUser} from './../redux/actions/user';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -30,10 +33,6 @@ class LoginScreen extends Component {
     };
   }
 
-  // async componentDidMount(){
-  //   await AsyncStorage.getItem('Authorization');
-  // }
-
   goToRegister = () => {
     this.props.navigation.navigate('RegisterScreen');
   };
@@ -49,14 +48,6 @@ class LoginScreen extends Component {
   goToLogin = () => {
     this.props.navigation.navigate('LoginScreen');
   };
-
-  // getLogin = async account => {
-  //   await this.props.dispatch(loginUser(account));
-  // const user = await axios.post(
-  //   'http://ec2-35-175-244-140.compute-1.amazonaws.com/user/login',
-  //   account,
-  // );
-  // };
 
   handleEmailChange = text => {
     console.log('email :' + text);
@@ -107,14 +98,14 @@ class LoginScreen extends Component {
             isMessage: 'Email or password is incorrect',
           });
           console.log(err);
-          this.setState({isLoading: false});;
+          this.setState({isLoading: false});
           return;
         });
     }
   };
   render() {
     return (
-      <View style={styles.container}>
+      <View>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Image
             source={require('./../assets/img/logo.png')}
@@ -133,30 +124,40 @@ class LoginScreen extends Component {
               {this.state.isMessage}
             </Text>
           )}
-          <Input
-            placeholder="Email"
-            keyboardType={'email-address'}
-            style={{borderRadius: 30}}
-            onChangeText={this.handleEmailChange}
-            value={this.state.email}
-          />
-          <Input
-            placeholder="Password"
-            password
-            viewPass
-            style={{borderRadius: 30, marginBottom: 10}}
-            onChangeText={this.handlePasswordChange}
-            value={this.state.password}
-          />
+          <Item
+            rounded
+            style={{marginBottom: 10, marginLeft: 20, marginRight: 20}}>
+            <Input
+              placeholder="Email"
+              keyboardType={'email-address'}
+              style={{fontSize: 15, marginLeft: 10}}
+              onChangeText={this.handleEmailChange}
+              value={this.state.email}
+            />
+          </Item>
+          <Item
+            rounded
+            style={{marginBottom: 10, marginLeft: 20, marginRight: 20}}>
+            <Input
+              placeholder="Password"
+              secureTextEntry={true}
+              style={{fontSize: 15, marginLeft: 10}}
+              onChangeText={this.handlePasswordChange}
+              value={this.state.password}
+            />
+          </Item>
           <Button
             block
+            rounded
+            dark
             style={{
-              borderRadius: 30,
               marginBottom: 10,
+              marginRight: 20,
+              marginLeft: 20,
               backgroundColor: 'black',
             }}
             onPress={() => this.handleSubmit()}>
-            <Text style={{color: 'white', fontWeight: 'bold'}}>Log In</Text>
+            <Text style={{color: 'white', fontSize: 15}}>Log In</Text>
           </Button>
           <View style={{flexDirection: 'row', alignSelf: 'center'}}>
             <Text>Don't have an account yet?</Text>

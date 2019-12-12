@@ -8,8 +8,8 @@ import {
   TouchableOpacity,
   ToastAndroid,
 } from 'react-native';
+import {Input, Button, Item} from 'native-base';
 import {connect} from 'react-redux';
-import {Input, Button} from 'galio-framework';
 import {addUser} from '../redux/actions/user';
 import {Left, Icon, Header, Body, Right} from 'native-base';
 
@@ -122,8 +122,15 @@ class RegisterScreen extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={{fontWeight: '700', fontSize: 30, marginBottom: 30}}>
+      <View>
+        <Text
+          style={{
+            fontWeight: '700',
+            fontSize: 30,
+            marginBottom: 30,
+            alignSelf: 'center',
+            marginTop: 40,
+          }}>
           SIGN UP
         </Text>
         {this.state.showMessage && (
@@ -131,44 +138,60 @@ class RegisterScreen extends Component {
             {this.state.isMessage}
           </Text>
         )}
-        <Input
-          placeholder="Name"
-          style={{borderRadius: 30}}
-          onChangeText={this.handleNameChange}
-          value={this.state.name}
-        />
-        <Input
-          placeholder="Email"
-          style={{borderRadius: 30}}
-          onChangeText={this.handleEmailChange}
-          value={this.state.email}
-        />
-        <Input
-          placeholder="Username"
-          style={{borderRadius: 30}}
-          onChangeText={this.handleUsernameChange}
-          value={this.state.username}
-        />
-        <Input
-          placeholder="Password"
-          password
-          viewPass
-          style={{borderRadius: 30, marginBottom: 10}}
-          onChangeText={this.handlePasswordChange}
-          value={this.state.password}
-        />
-        <TouchableOpacity>
-          <Button
-            style={styles.signupButton}
-            onPress={() => this.handleSubmit()}>
-            Sign Up
-          </Button>
-        </TouchableOpacity>
-        <View style={{flexDirection: 'row'}}>
-          <Text>Already have an account?</Text>
-          <TouchableOpacity onPress={() => this.goToLogin()}>
-            <Text style={{color: '#3498db', fontWeight: 'bold'}}> Log in</Text>
+        <View style={{marginLeft: 20, marginRight: 20}}>
+          <Item rounded style={{marginBottom: 10}}>
+            <Input
+              placeholder="Name"
+              style={{marginLeft: 10, fontSize: 15}}
+              onChangeText={this.handleNameChange}
+              value={this.state.name}
+            />
+          </Item>
+          <Item rounded style={{marginBottom: 10}}>
+            <Input
+              placeholder="Email"
+              style={{marginLeft: 10, fontSize: 15}}
+              onChangeText={this.handleEmailChange}
+              value={this.state.email}
+            />
+          </Item>
+          <Item rounded style={{marginBottom: 10}}>
+            <Input
+              placeholder="Username"
+              style={{marginLeft: 10, fontSize: 15}}
+              onChangeText={this.handleUsernameChange}
+              value={this.state.username}
+            />
+          </Item>
+          <Item rounded style={{marginBottom: 10}}>
+            <Input
+              placeholder="Password"
+              secureTextEntry={true}
+              style={{marginLeft: 10, fontSize: 15}}
+              onChangeText={this.handlePasswordChange}
+              value={this.state.password}
+            />
+          </Item>
+
+          <TouchableOpacity>
+            <Button
+              block
+              dark
+              rounded
+              style={styles.signupButton}
+              onPress={() => this.handleSubmit()}>
+              <Text style={{fontSize: 15, color: '#fff'}}>Sign Up</Text>
+            </Button>
           </TouchableOpacity>
+          <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+            <Text>Already have an account?</Text>
+            <TouchableOpacity onPress={() => this.goToLogin()}>
+              <Text style={{color: '#3498db', fontWeight: 'bold'}}>
+                {' '}
+                Log in
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     );
